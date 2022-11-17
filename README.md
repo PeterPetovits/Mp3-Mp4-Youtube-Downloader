@@ -9,7 +9,7 @@
 
     6. pip3 install pytube inside env
     7. To save audio/video file we need to install os_sys pip install os_sys inside env
-    8.For the metadata editor we need to insall tinytag : pip install tinytag inside env
+    8.For the metadata editor we need to insall tinytag : pip install eyed3 inside env
     9. For the trimmer we need to install trimmer: pip3 install trimmer inside env
     10. For trimmer we also need to install: For linux: apt install ffmpeg libavcodec-extra
                                             For Windows put ffmpeg binaries to PATH
