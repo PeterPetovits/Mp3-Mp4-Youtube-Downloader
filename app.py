@@ -10,6 +10,19 @@ app = Flask(__name__)
 def index():
     return render_template('index.html')
 
+@app.route('/mp3_option_button', methods = ["GET", "POST"])
+def mp3_option_button():
+    if request.method == "POST":
+        return render_template('index.html', option_form_mp3 = "mp3")
+    return render_template('mp3-form.html')
+        
+
+@app.route('/mp4_option_button', methods = ["GET", "POST"])
+def mp4_option_button():
+    if request.method == "POST":
+        return render_template('index.html', option_form_mp4 = "mp4")
+    return render_template('mp4-form.html')
+
 @app.route('/mp3_download', methods= ["GET", "POST"])
 def mp3_download():
     if request.method == "POST":
@@ -30,18 +43,16 @@ def mp3_download():
         new_file = base + '.mp3'
         os.rename(out_file, new_file)
         fileNameDownloadPath = new_file
-        print(fileNameDownloadPath)
-        return render_template('index.html', result = "Download Complete", file = fileNameDownloadPath)
+        return render_template('index.html', result = "Download Complete", file = fileNameDownloadPath, option_form_mp3 = "mp3")
     return render_template('index.html')
 
 @app.route('/mp4_download', methods= ["GET", "POST"])
 def mp4_download():
     if request.method == "POST":
         youtube_link = request.form.get("youtube_link")
-
         yt = YouTube(str(youtube_link))
         yt.streams.filter(progressive=True, file_extension='mp4').order_by('resolution').desc().first().download('.')
-        return redirect('index.html', result = "Download Complete")
+        return render_template('index.html', result = "Download Complete", option_form_mp4 = "mp4")
     return render_template('index.html')
 
 if __name__ == "__main__":

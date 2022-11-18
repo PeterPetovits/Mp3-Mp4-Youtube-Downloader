@@ -16,22 +16,22 @@
 
         <main>
 
-            <form action="{{url_for('mp3_download')}}" method="post">
-                <label for="fname">Youtube URL:</label><br>
-                <input type="text" id="youtube_link" name="youtube_link" placeholder="Youtube Link"><br>
-                <input type="submit" value="Download MP3">
+            <form action="{{url_for('mp3_option_button')}}" method="post">
+                <button id="MP3-Button" name="MP3-Button" value="MP3-Option">MP3 Option</button>
             </form>
 
-            <form action="{{url_for('mp4_download')}}" method="post">
-                <label for="fname">Youtube URL:</label><br>
-                <input type="text" id="youtube_link" name="youtube_link" placeholder="Youtube Link"><br>
-                <input type="submit" value="Download MP4">
+            <form action="{{url_for('mp4_option_button')}}" method="post">
+                <button id="MP4-Button" name="MP4-Button" value="MP4-Option">MP4 Option</button>
             </form>
-
-            <h3>{{result}}</h3>
-            <h3>{{file}}</h3>
-
         </main>
+
+        {% if option_form_mp3 %}
+            {%include 'mp3-form.html' %}
+        {% endif %}
+
+        {% if option_form_mp4 %}
+            {%include 'mp4-form.html' %}
+        {% endif %}
            
         <footer>
 
