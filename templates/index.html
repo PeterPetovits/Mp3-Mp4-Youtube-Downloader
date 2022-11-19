@@ -32,6 +32,10 @@
         {% if option_form_mp4 %}
             {%include 'mp4-form.html' %}
         {% endif %}
+
+        {% if metadata_editor_open %}
+            {% include 'mp3-metadata-editor.html' %}
+        {% endif %}
            
         <footer>
 

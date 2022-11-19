@@ -17,13 +17,20 @@
         <main>
 
             <form action="{{url_for('mp4_download')}}" method="post">
-                <label for="fname">Youtube URL:</label><br>
-                <input type="text" id="youtube_link" name="youtube_link" placeholder="Youtube Link"><br>
+                <label for="youtube_link">Youtube URL:</label><br>
+                <input type="text" id="youtube_link" name="youtube_link" placeholder="Youtube Link" required><br>
+
+                <input type="radio" id="video_quality_720p" name="video_quality" value="720p">
+                <label for="youtube_quality_720p">720p</label><br>
+
+                <input type="radio" id="video_quality_1080p" name="video_quality" value="1080p" checked>
+                <label for="youtube_quality_1080p">1080p</label><br>
+
                 <input type="submit" value="Download MP4">
             </form>
 
             <h3>{{result}}</h3>
-            <h3>{{file}}</h3>
+            <h3>{{filePath}}</h3>
 
         </main>
            

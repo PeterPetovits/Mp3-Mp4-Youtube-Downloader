@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Youtube MP3-MP4 Downloader</title>
+
+        <link rel="stylesheet" href="{{ url_for('static', filename = 'css/style.css')}}">
+    </head>
+
+    <body>
+        <header>
+
+        </header>
+
+        <main>
+
+            <form action="{{url_for('mp3_metadata_editor')}}" method="post">
+                <label for="artist">Artist:</label><br>
+                <input type="text" id="artist" name="artist" placeholder="Artist"><br>
+
+                <label for="album">Album:</label><br>
+                <input type="text" id="album" name="album" placeholder="Album"><br>
+
+                <label for="album_artist">Album Artist:</label><br>
+                <input for="text" id="album_artist" name="album_artist" placeholder="Album Artist"><br>
+
+                <label for="title">Title:</label><br>
+                <input for="text" id="title" name="title" placeholder="Title"><br>
+
+                <label for="track_number">Track Number:</label><br>
+                <input for="text" id="track_number" name="track_number" placeholder="Track Number"><br>
+
+                <label for="genre">Genre:</label><br>
+                <input for="text" id="genre" name="genre" placeholder="Genre"><br>
+
+                <label for="year">Year:</label><br>
+                <input for="text" id="year" name="year" placeholder="Year"><br>
+
+                <input type="file" id="cover_art" name="cover_art">
+
+                <input type="submit" value="Save Metadata">
+            </form>
+
+        </main>
+           
+        <footer>
+
+        </footer>
+    </body>
+</html>
