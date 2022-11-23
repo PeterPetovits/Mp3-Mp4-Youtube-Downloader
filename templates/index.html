@@ -11,18 +11,20 @@
 
     <body>
         <header>
-
+            <h1>MP3-MP4 YouTube Downloader</h1>
         </header>
 
-        <main>
+        <main class="main-page">
 
-            <form action="{{url_for('mp3_option_button')}}" method="post">
-                <button id="MP3-Button" name="MP3-Button" value="MP3-Option">MP3 Option</button>
-            </form>
+            <div class="content">
+                <form action="{{url_for('mp3_option_button')}}" method="post">
+                    <button id="MP3-Button" name="MP3-Button" value="MP3-Option">MP3 Option</button>
+                </form>
+                <form action="{{url_for('mp4_option_button')}}" method="post">
+                    <button id="MP4-Button" name="MP4-Button" value="MP4-Option">MP4 Option</button>
+                </form>
+            </div>
 
-            <form action="{{url_for('mp4_option_button')}}" method="post">
-                <button id="MP4-Button" name="MP4-Button" value="MP4-Option">MP4 Option</button>
-            </form>
         </main>
 
         {% if option_form_mp3 %}

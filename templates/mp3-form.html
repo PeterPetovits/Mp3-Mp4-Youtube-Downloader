@@ -14,16 +14,17 @@
 
         </header>
 
-        <main>
+        <main class="main-page">
 
-            <form action="{{url_for('mp3_download')}}" method="post">
-                <label for="youtube_link">Youtube URL:</label><br>
-                <input type="text" id="youtube_link" name="youtube_link" placeholder="Youtube Link"><br>
-                <input type="submit" value="Download MP3">
-            </form>
-
-            <h3>{{result}}</h3>
-            <h3>{{file}}</h3>
+            <div class="content">
+                <form class="mp3-form" action="{{url_for('mp3_download')}}" method="post">
+                    <label for="youtube_link">Youtube URL:</label><br>
+                    <input type="text" id="youtube_link" name="youtube_link" placeholder="Youtube Link"><br>
+                    <input type="submit" value="Download MP3">
+                </form>
+                <h3>{{result}}</h3>
+                <h3>{{file}}</h3>
+            </div>
 
         </main>
            

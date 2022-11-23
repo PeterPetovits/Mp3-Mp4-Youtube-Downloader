@@ -14,35 +14,37 @@
 
         </header>
 
-        <main>
+        <main class="main-page">
 
-            <form action="{{url_for('mp3_metadata_editor')}}" method="post" enctype="multipart/form-data">
-                <label for="artist">Artist:</label><br>
-                <input type="text" id="artist" name="artist" placeholder="Artist"><br>
+            <div class="content">
+                <form class="mp3-metadata-editor" action="{{url_for('mp3_metadata_editor')}}" method="post" enctype="multipart/form-data">
+                    <label for="artist">Artist:</label><br>
+                    <input type="text" id="artist" name="artist" placeholder="Artist"><br>
 
-                <label for="album">Album:</label><br>
-                <input type="text" id="album" name="album" placeholder="Album"><br>
+                    <label for="album">Album:</label><br>
+                    <input type="text" id="album" name="album" placeholder="Album"><br>
 
-                <label for="album_artist">Album Artist:</label><br>
-                <input for="text" id="album_artist" name="album_artist" placeholder="Album Artist"><br>
+                    <label for="album_artist">Album Artist:</label><br>
+                    <input for="text" id="album_artist" name="album_artist" placeholder="Album Artist"><br>
 
-                <label for="title">Title:</label><br>
-                <input for="text" id="title" name="title" placeholder="Title"><br>
+                    <label for="title">Title:</label><br>
+                    <input for="text" id="title" name="title" placeholder="Title"><br>
 
-                <label for="track_number">Track Number:</label><br>
-                <input for="text" id="track_number" name="track_number" placeholder="Track Number"><br>
+                    <label for="track_number">Track Number:</label><br>
+                    <input for="text" id="track_number" name="track_number" placeholder="Track Number"><br>
 
-                <label for="genre">Genre:</label><br>
-                <input for="text" id="genre" name="genre" placeholder="Genre"><br>
+                    <label for="genre">Genre:</label><br>
+                    <input for="text" id="genre" name="genre" placeholder="Genre"><br>
 
-                <label for="year">Year:</label><br>
-                <input for="text" id="year" name="year" placeholder="Year"><br>
+                    <label for="year">Year:</label><br>
+                    <input for="text" id="year" name="year" placeholder="Year"><br>
 
-                <input type="file" id="cover_art_file" name="cover_art_file">
+                    <input type="file" id="cover_art_file" name="cover_art_file">
 
-                <input type="submit" value="Save Metadata">
-            </form>
-
+                    <input type="submit" value="Save Metadata">
+                </form>
+            </div>
+            
         </main>
            
         <footer>
