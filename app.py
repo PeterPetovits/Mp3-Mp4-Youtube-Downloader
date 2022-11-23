@@ -4,7 +4,10 @@ from pytube import YouTube
 import ffmpeg
 import eyed3
 
+UPLOAD_FOLDER = './upload-files'
 app = Flask(__name__)
+
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 @app.route('/')
 def index():
@@ -95,7 +98,16 @@ def mp3_metadata_editor():
         track_number = str(request.form.get("track_number"))
         genre = str(request.form.get("genre"))
         year = str(request.form.get("year"))
-        cover_art = request.form.get("cover_art")
+
+        if 'cover_art_file' not in request.files:
+            return render_template(request.url)
+        else:
+            cover_art_file = request.files['cover_art_file']
+
+        if cover_art_file.filename == '':
+            return redirect(request.url)
+        if cover_art_file :
+            cover_art_file.save(os.path.join(app.config['UPLOAD_FOLDER'], cover_art_file.filename))
 
         useless, songFileName = fileNameDownloadPath.split('/./')
 
@@ -104,11 +116,8 @@ def mp3_metadata_editor():
         os.rename("temp2.mp3", songFileName)
         os.remove("temp.mp3")
 
-        audioFile = eyed3.load(songFileName)
-
         try:
             audioFile = eyed3.load(songFileName)
-            print(audioFile)
             if not audioFile.tag:
                 audioFile.initTag()
 
@@ -121,17 +130,20 @@ def mp3_metadata_editor():
                 audioFile.tag.track_number = track_number
                 audioFile.tag.genre = genre
                 audioFile.tag.year = year
-                audioFile.tag.images.set(0, cover_art, "image/jpeg")
+
+                with open(UPLOAD_FOLDER + "/" + cover_art_file.filename, "rb") as cover_art:
+                    audioFile.tag.images.set(0, cover_art.read(), "image/jpeg")
+
+                with open(UPLOAD_FOLDER + "/" + cover_art_file.filename, "rb") as cover_art:
+                    audioFile.tag.images.set(3, cover_art.read(), "image/jpeg")
 
                 audioFile.tag.save()
+
+                os.rename(songFileName, artist + " - " + title + ".mp3")
+                os.remove(UPLOAD_FOLDER + "/" + cover_art_file.filename)
         except IOError:
             IOError
         
-       # if not audioFile.tag():
-        #    audioFile.initTag()
-        
-        
-       
         return render_template('index.html', result = "Download Complete", file = fileNameDownloadPath, option_form_mp3 = "mp3")
     return render_template('index.html')
 

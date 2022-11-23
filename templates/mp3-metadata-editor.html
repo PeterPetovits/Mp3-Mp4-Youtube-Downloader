@@ -16,7 +16,7 @@
 
         <main>
 
-            <form action="{{url_for('mp3_metadata_editor')}}" method="post">
+            <form action="{{url_for('mp3_metadata_editor')}}" method="post" enctype="multipart/form-data">
                 <label for="artist">Artist:</label><br>
                 <input type="text" id="artist" name="artist" placeholder="Artist"><br>
 
@@ -38,7 +38,7 @@
                 <label for="year">Year:</label><br>
                 <input for="text" id="year" name="year" placeholder="Year"><br>
 
-                <input type="file" id="cover_art" name="cover_art">
+                <input type="file" id="cover_art_file" name="cover_art_file">
 
                 <input type="submit" value="Save Metadata">
             </form>
