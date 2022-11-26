@@ -35,10 +35,14 @@
             {%include 'mp4-form.html' %}
         {% endif %}
 
+        {% if trimmer_open %}
+            {% include 'trimmer.html' %}
+        {% endif %}
+
         {% if metadata_editor_open %}
             {% include 'mp3-metadata-editor.html' %}
         {% endif %}
-           
+
         <footer>
 
         </footer>

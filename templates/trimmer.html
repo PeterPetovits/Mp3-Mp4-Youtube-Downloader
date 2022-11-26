@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Youtube MP3-MP4 Downloader</title>
+
+        <link rel="stylesheet" href="{{ url_for('static', filename = 'css/style.css')}}">
+    </head>
+
+    <body>
+        <header>
+           
+        </header>
+
+        <main>
+            <form action="{{url_for('trimmer_editor')}}" method="post">
+                <label for="start-time">Artist:</label><br>
+                <input type="text" id="start-time" name="start-time" placeholder="Start Time"><br>
+
+                <label for="end-time">Album:</label><br>
+                <input type="text" id="end-time" name="end-time" placeholder="End Time"><br>
+
+                <input type="submit" value="Trim">
+            </form>
+        </main>
+
+        <h3>{{result_trimmer}}</h3>
+           
+        <footer>
+
+        </footer>
+    </body>
+</html>
