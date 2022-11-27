@@ -15,11 +15,11 @@
         </header>
 
         <main>
-            <form action="{{url_for('trimmer_editor')}}" method="post">
-                <label for="start-time">Artist:</label><br>
+            <form class="trimmer-form" action="{{url_for('trimmer_editor')}}" method="post">
+                <label for="start-time">Start Time: </label><br>
                 <input type="text" id="start-time" name="start-time" placeholder="Start Time"><br>
 
-                <label for="end-time">Album:</label><br>
+                <label for="end-time">End Time: </label><br>
                 <input type="text" id="end-time" name="end-time" placeholder="End Time"><br>
 
                 <input type="submit" value="Trim">
