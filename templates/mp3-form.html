@@ -19,7 +19,7 @@
             <div class="content mp3-form-content">
                 <form class="mp3-form" action="{{url_for('mp3_download')}}" method="post">
                     <label for="youtube_link"><h3>Youtube URL:</h3></label><br>
-                    <input type="text" id="youtube_link" name="youtube_link" placeholder="Youtube Link"><br>
+                    <input type="text" id="youtube_link" name="youtube_link" placeholder="Youtube Link" required><br>
                     <input type="submit" value="Download MP3">
                 </form>
                 <h3>{{result}}</h3>

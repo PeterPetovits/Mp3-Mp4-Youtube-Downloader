@@ -31,7 +31,7 @@ def mp4_option_button():
     return render_template('index.html')
 
 
-#mp3 download function after link inserted
+#mp3 download function after link inserted and download mp3 button pressed
 @app.route('/mp3_download', methods= ["GET", "POST"])
 def mp3_download():
     if request.method == "POST":
@@ -102,6 +102,7 @@ def mp4_download():
         return render_template('index.html', result = "Download Complete", filePath = videoFileName, option_form_mp4 = "mp4")
     return render_template('index.html')
 
+
 #mp3 trimmer template after mp3 file download complete
 @app.route('/trimmer_editor', methods = ["GET", "POST"])
 def trimmer_editor():
@@ -110,12 +111,31 @@ def trimmer_editor():
         start = str(request.form.get("start-time"))
         end = str(request.form.get("end-time"))
 
-        os.system("trimmer " + '"' + songFileNameToTrimmer + '"' + " --trim-start " + start + " --trim-end " + end + " --title tempTitle --artist tempArtist")
-
         global fileNameDownloadPath
-        fileNameDownloadPath = str("tempArtist - tempTitle.mp3")
+        
+        if start == '' and end == '':       #if no values for trim have been inserted, just default passthrough to trimmer library
+            os.system("trimmer " + '"' + songFileNameToTrimmer + '"' + " --title tempTitle --artist tempArtist")
+            fileNameDownloadPath = str("tempArtist - tempTitle.mp3")
+            return render_template('index.html', result = "Download Complete", option_form_mp3 = "mp3", trimmer_open = "open", result_trimmer = "Trim not applied", metadata_editor_open = "open")
+        elif start != '' and end == '':     #if only start value for trim has been inserted
+            os.system("trimmer " + '"' + songFileNameToTrimmer + '"' + " --trim-start " + start + " --title tempTitle --artist tempArtist")
+            fileNameDownloadPath = str("tempArtist - tempTitle.mp3")
+            return render_template('index.html', result = "Download Complete", option_form_mp3 = "mp3", trimmer_open = "open", result_trimmer = "Trim for Start Done", metadata_editor_open = "open")
+        elif start == '' and end != '':     #if only end value for trim has been inserted
+            os.system("trimmer " + '"' + songFileNameToTrimmer + '"' + " --trim-end " + end + " --title tempTitle --artist tempArtist")
+            fileNameDownloadPath = str("tempArtist - tempTitle.mp3")
+            return render_template('index.html', result = "Download Complete", option_form_mp3 = "mp3", trimmer_open = "open", result_trimmer = "Trim for End Done", metadata_editor_open = "open")
+        else:           #if both values have been inserted
+            os.system("trimmer " + '"' + songFileNameToTrimmer + '"' + " --trim-start " + start + " --trim-end " + end + " --title tempTitle --artist tempArtist")
+            fileNameDownloadPath = str("tempArtist - tempTitle.mp3")
+            return render_template('index.html', result = "Download Complete", option_form_mp3 = "mp3", trimmer_open = "open", result_trimmer = "Trim Done", metadata_editor_open = "open")
 
-        return render_template('index.html', result = "Download Complete", option_form_mp3 = "mp3", trimmer_open = "open", result_trimmer = "Trim Done", metadata_editor_open = "open")
+        #os.system("trimmer " + '"' + songFileNameToTrimmer + '"' + " --trim-start " + start + " --trim-end " + end + " --title tempTitle --artist tempArtist")
+
+        #global fileNameDownloadPath
+        #fileNameDownloadPath = str("tempArtist - tempTitle.mp3")
+
+        #return render_template('index.html', result = "Download Complete", option_form_mp3 = "mp3", trimmer_open = "open", result_trimmer = "Trim Done", metadata_editor_open = "open")
     return render_template('index.html')
 
 
