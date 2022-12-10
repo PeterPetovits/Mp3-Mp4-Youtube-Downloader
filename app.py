@@ -162,23 +162,12 @@ def mp3_metadata_editor():
                 cover_art_file = FileStorage(fp, content_type='image/jpeg')
                 
             print(cover_art_file)
-        #else:               #here we grab the cover art file like for the rest above
-            #cover_art_file = request.files['cover_art_file']
         else:
             cover_art_file.save(os.path.join(app.config['UPLOAD_FOLDER'], cover_art_file.filename))
-        #if cover_art_file.filename == '':       #more checking if the cover art file is present
-         #   print('inside second if block')
-          #  return redirect(request.url)
-
-        #if cover_art_file:                     #if cover art file is inserted then save it temp. to use it later on
-            #cover_art_file.save(os.path.join(app.config['UPLOAD_FOLDER'], cover_art_file.filename))
 
         #useless, songFileName = fileNameDownloadPath.split('/./')
 
-        
         songFileName = fileNameDownloadPath
-        print(cover_art_file)
-        print(cover_art_file.filename)     
 
         os.rename(songFileName, "temp.mp3")
         os.system("ffmpeg -i temp.mp3 -ab 320k temp2.mp3")
@@ -199,8 +188,6 @@ def mp3_metadata_editor():
                 audioFile.tag.genre = genre
                 audioFile.tag.year = year
 
-                print("YES so far")
-
                 if(flag_no_cover_user):
                     with open(cover_art_file.filename, "rb") as cover_art:
                         audioFile.tag.images.set(0, cover_art.read(), "image/jpeg")
@@ -211,13 +198,10 @@ def mp3_metadata_editor():
                     with open(UPLOAD_FOLDER + "/" + cover_art_file.filename, "rb") as cover_art:
                         audioFile.tag.images.set(0, cover_art.read(), "image/jpeg")
 
-                    print("YES so far 222")
                     with open(UPLOAD_FOLDER + "/" + cover_art_file.filename, "rb") as cover_art:
                         audioFile.tag.images.set(3, cover_art.read(), "image/jpeg")
 
                 audioFile.tag.save()
-
-                print("OK META")
 
                 os.rename(songFileName, artist + " - " + title + ".mp3")
                 os.remove(UPLOAD_FOLDER + "/" + cover_art_file.filename)
