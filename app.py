@@ -210,8 +210,12 @@ def mp3_metadata_editor():
         except IOError:
             IOError
         
-        return render_template('index.html', result = "Download Complete", option_form_mp3 = "mp3", metadata_editor_open = "open", trimmer_open = "open")
+        return render_template('index.html', result = "Download Complete", option_form_mp3 = "mp3", metadata_editor_open = "open", trimmer_open = "open", player_button_open = "open")
     return render_template('index.html')
+
+@app.route('/mp3_player', methods= ["GET", "POST"])
+def mp3_player():
+    return render_template('mp3-player-One.html')
 
 
 if __name__ == "__main__":
