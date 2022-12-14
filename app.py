@@ -10,6 +10,9 @@ app = Flask(__name__)
 
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
+#file pathname separator
+sep = os.sep
+
 #original app route to index page
 @app.route('/')
 def index():
@@ -57,7 +60,7 @@ def mp3_download():
         fileNameDownloadPath = new_file
 
         global songFileNameToTrimmer
-        useless, songFileNameToTrimmer = fileNameDownloadPath.split('/./')
+        useless, songFileNameToTrimmer = fileNameDownloadPath.split(sep+'.'+sep)
         os.rename(songFileNameToTrimmer, "temp-download.mp3")
         os.system("ffmpeg -i temp-download.mp3 -ab 320k temp.mp3")
         os.rename("temp.mp3", songFileNameToTrimmer)
@@ -75,13 +78,13 @@ def mp4_download():
 
         yt = YouTube(str(youtube_link))
         v_quality = str(video_quality)
-        fileNameDownloadPathVideoOnly = yt.streams.filter(res = v_quality).first().download('./temp-video')
+        fileNameDownloadPathVideoOnly = yt.streams.filter(res = v_quality).first().download('.'+sep+'temp-video')
         #yt.streams.filter(progressive=True, file_extension='mp4').order_by('resolution').desc().first().download('.')
         
-        useless, videoFileName = fileNameDownloadPathVideoOnly.split('./temp-video/')   #keep the video file name for later in order to save it
+        useless, videoFileName = fileNameDownloadPathVideoOnly.split('.'+sep+'temp-video'+sep)   #keep the video file name for later in order to save it
 
         yt = YouTube(str(youtube_link))
-        out_file = yt.streams.filter(only_audio=True).first().download('./temp-audio')  #extract audio only
+        out_file = yt.streams.filter(only_audio=True).first().download('.'+sep+'temp-audio')  #extract audio only
         
         # save the file
         base, ext = os.path.splitext(out_file)
