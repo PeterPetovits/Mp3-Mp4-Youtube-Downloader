@@ -39,6 +39,10 @@
             {% include 'trimmer.html' %}
         {% endif %}
 
+        {% if mp4_trimmer_open %}
+            {% include 'mp4_trimmer.html' %}
+        {% endif %}
+
         {% if metadata_editor_open %}
             {% include 'mp3-metadata-editor.html' %}
         {% endif %}

@@ -4,6 +4,7 @@ from pytube import YouTube
 import ffmpeg
 import eyed3
 from werkzeug.datastructures import FileStorage
+from moviepy.editor import VideoFileClip
 
 UPLOAD_FOLDER = './upload-files'
 app = Flask(__name__)
@@ -81,6 +82,7 @@ def mp4_download():
         fileNameDownloadPathVideoOnly = yt.streams.filter(res = v_quality).first().download('.'+sep+'temp-video')
         #yt.streams.filter(progressive=True, file_extension='mp4').order_by('resolution').desc().first().download('.')
         
+        global videoFileName
         useless, videoFileName = fileNameDownloadPathVideoOnly.split('.'+sep+'temp-video'+sep)   #keep the video file name for later in order to save it
 
         yt = YouTube(str(youtube_link))
@@ -103,7 +105,7 @@ def mp4_download():
         else:
             print("The files do not exist")
 
-        return render_template('index.html', result = "Download Complete", filePath = videoFileName, option_form_mp4 = "mp4")
+        return render_template('index.html', result = "Download Complete", filePath = videoFileName, option_form_mp4 = "mp4", mp4_trimmer_open = "open")
     return render_template('index.html')
 
 
@@ -116,7 +118,7 @@ def trimmer_editor():
         end = str(request.form.get("end-time"))
 
         global fileNameDownloadPath
-        
+
         if start == '' and end == '':       #if no values for trim have been inserted, just default passthrough to trimmer library
             os.system("trimmer " + '"' + songFileNameToTrimmer + '"' + " --title tempTitle --artist tempArtist")
             fileNameDownloadPath = str("tempArtist - tempTitle.mp3")
@@ -140,6 +142,41 @@ def trimmer_editor():
         #fileNameDownloadPath = str("tempArtist - tempTitle.mp3")
 
         #return render_template('index.html', result = "Download Complete", option_form_mp3 = "mp3", trimmer_open = "open", result_trimmer = "Trim Done", metadata_editor_open = "open")
+    return render_template('index.html')
+
+
+#mp4 trimmer template after mp4 file download complete
+@app.route('/mp4_trimmer_editor', methods = ["GET", "POST"])
+def mp4_trimmer_editor():
+    if request.method == "POST":
+
+        start = str(request.form.get("start-time"))
+        end = str(request.form.get("end-time"))
+
+        clip = VideoFileClip(videoFileName)
+        duration = clip.duration
+
+        global fileNameDownloadPath
+        
+        if start == '' and end == '':       #if no values for trim have been inserted, just default passthrough to trimmer library
+            return render_template('index.html', result = "Download Complete", option_form_mp4 = "mp4", mp4_trimmer_open = "open", result_trimmer = "Trim not applied", metadata_editor_open = "open")
+        elif start != '' and end == '':     #if only start value for trim has been inserted
+            os.system("ffmpeg -i " + '"' + videoFileName + '"' + " -codec copy " + '"' + "temp_vid.mp4" + '"')
+            os.system("ffmpeg -y -i " + '"' + "temp_vid.mp4" + '"' + " -ss " + start + " -to " + str(duration) + " -c:v copy -c:a copy " + '"' + videoFileName + '"')
+            os.remove("temp_vid.mp4")
+            return render_template('index.html', result = "Download Complete", option_form_mp4 = "mp4", mp4_trimmer_open = "open", result_trimmer = "Trim for Start Done", metadata_editor_open = "open")
+        elif start == '' and end != '':     #if only end value for trim has been inserted
+            os.system("ffmpeg -i " + '"' + videoFileName + '"' + " -codec copy " + '"' + "temp_vid.mp4" + '"')
+            os.system("ffmpeg -y -i " + '"' + "temp_vid.mp4" + '"' + " -ss " + "0" + " -to " + str(duration - int(end)) + " -c:v copy -c:a copy " + '"' + videoFileName + '"')
+            os.remove("temp_vid.mp4")
+            return render_template('index.html', result = "Download Complete", option_form_mp4 = "mp4", mp4_trimmer_open = "open", result_trimmer = "Trim for End Done", metadata_editor_open = "open")
+        else:           #if both values have been inserted
+            os.system("ffmpeg -i " + '"' + videoFileName + '"' + " -codec copy " + '"' + "temp_vid.mp4" + '"')
+            os.system("ffmpeg -y -i " + '"' + "temp_vid.mp4" + '"' + " -ss " + start + " -to " + str(duration - int(end)) + " -c:v copy -c:a copy " + '"' + videoFileName + '"')
+            os.remove("temp_vid.mp4")
+
+            return render_template('index.html', result = "Download Complete", option_form_mp4 = "mp4", mp4_trimmer_open = "open", result_trimmer = "Trim Done")
+
     return render_template('index.html')
 
 
