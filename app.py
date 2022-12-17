@@ -13,7 +13,7 @@ UPLOAD_FOLDER = '.' + sep + 'upload-files'
 app = Flask(__name__)
 
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-app.config['CLIENT_MUSIC'] = os.path.expanduser("~" + sep + "Desktop" + sep + "Mp3-Mp4-Youtube-Downloader")
+app.config['CLIENT_FILES'] = os.path.expanduser("~" + sep + "Desktop" + sep + "Mp3-Mp4-Youtube-Downloader")
 
 #original app route to index page
 @app.route('/')
@@ -160,23 +160,23 @@ def mp4_trimmer_editor():
         global fileNameDownloadPath
         
         if start == '' and end == '':       #if no values for trim have been inserted, just default passthrough to trimmer library
-            return render_template('index.html', result = "Download Complete", option_form_mp4 = "mp4", mp4_trimmer_open = "open", result_trimmer = "Trim not applied", metadata_editor_open = "open")
+            return render_template('index.html', result = "Download Complete", option_form_mp4 = "mp4", mp4_trimmer_open = "open", result_trimmer = "Trim not applied", mp4_download_button_open = "open")
         elif start != '' and end == '':     #if only start value for trim has been inserted
             os.system("ffmpeg -i " + '"' + videoFileName + '"' + " -codec copy " + '"' + "temp_vid.mp4" + '"')
             os.system("ffmpeg -y -i " + '"' + "temp_vid.mp4" + '"' + " -ss " + start + " -to " + str(duration) + " -c:v copy -c:a copy " + '"' + videoFileName + '"')
             os.remove("temp_vid.mp4")
-            return render_template('index.html', result = "Download Complete", option_form_mp4 = "mp4", mp4_trimmer_open = "open", result_trimmer = "Trim for Start Done", metadata_editor_open = "open")
+            return render_template('index.html', result = "Download Complete", option_form_mp4 = "mp4", mp4_trimmer_open = "open", result_trimmer = "Trim for Start Done", mp4_download_button_open = "open")
         elif start == '' and end != '':     #if only end value for trim has been inserted
             os.system("ffmpeg -i " + '"' + videoFileName + '"' + " -codec copy " + '"' + "temp_vid.mp4" + '"')
             os.system("ffmpeg -y -i " + '"' + "temp_vid.mp4" + '"' + " -ss " + "0" + " -to " + str(duration - int(end)) + " -c:v copy -c:a copy " + '"' + videoFileName + '"')
             os.remove("temp_vid.mp4")
-            return render_template('index.html', result = "Download Complete", option_form_mp4 = "mp4", mp4_trimmer_open = "open", result_trimmer = "Trim for End Done", metadata_editor_open = "open")
+            return render_template('index.html', result = "Download Complete", option_form_mp4 = "mp4", mp4_trimmer_open = "open", result_trimmer = "Trim for End Done", mp4_download_button_open = "open")
         else:           #if both values have been inserted
             os.system("ffmpeg -i " + '"' + videoFileName + '"' + " -codec copy " + '"' + "temp_vid.mp4" + '"')
             os.system("ffmpeg -y -i " + '"' + "temp_vid.mp4" + '"' + " -ss " + start + " -to " + str(duration - int(end)) + " -c:v copy -c:a copy " + '"' + videoFileName + '"')
             os.remove("temp_vid.mp4")
 
-            return render_template('index.html', result = "Download Complete", option_form_mp4 = "mp4", mp4_trimmer_open = "open", result_trimmer = "Trim Done")
+            return render_template('index.html', result = "Download Complete", option_form_mp4 = "mp4", mp4_trimmer_open = "open", result_trimmer = "Trim Done", mp4_download_button_open = "open")
 
     return render_template('index.html')
 
@@ -197,12 +197,9 @@ def mp3_metadata_editor():
         
         flag_no_cover_user = False
         if cover_art_file.filename == '':   #here we check if the request includes a cover art file
-            print('inside first if block')
             flag_no_cover_user = True
             with open('.'+sep+'upload-files'+sep+'default-cover.jpeg', "rb") as fp:
                 cover_art_file = FileStorage(fp, content_type='image/jpeg')
-                
-            print(cover_art_file)
         else:
             cover_art_file.save(os.path.join(app.config['UPLOAD_FOLDER'], cover_art_file.filename))
 
@@ -214,6 +211,9 @@ def mp3_metadata_editor():
         os.system("ffmpeg -i temp.mp3 -ab 320k temp2.mp3")
         os.rename("temp2.mp3", songFileName)
         os.remove("temp.mp3")
+
+        print("HERE 3")
+        global finalFileNameMp3
 
         try:
             audioFile = eyed3.load(songFileName)
@@ -244,10 +244,14 @@ def mp3_metadata_editor():
 
                 audioFile.tag.save()
 
+                print("HERE 1")
                 os.rename(songFileName, artist + " - " + title + ".mp3")
+                print("HERE 2")
                 os.remove(UPLOAD_FOLDER + sep + cover_art_file.filename)
-                global finalFileNameMp3
+                print("HERE 4")
                 finalFileNameMp3 = artist + " - " + title + ".mp3"
+                print("HERE 5")
+
         except IOError:
             IOError
         
@@ -259,12 +263,19 @@ def mp3_metadata_editor():
 def mp3_player():
     return render_template('mp3-player-One.html')
 
-#download the final file to downloads folder in user's computer
+#download the final music file to downloads folder in user's computer
 @app.route('/download_file', methods = ["GET", "POST"])
 def download_file():
     try:
-        print(finalFileNameMp3)
-        return send_from_directory(directory = app.config['CLIENT_MUSIC'], path = finalFileNameMp3, as_attachment = True)
+        return send_from_directory(directory = app.config['CLIENT_FILES'], path = finalFileNameMp3, as_attachment = True)
+    except FileNotFoundError:
+        abort(404)
+
+#download the final video file to downloads folder in user's computer
+@app.route('/download_mp4_file', methods = ["GET", "POST"])
+def download_mp4_file():
+    try:
+        return send_from_directory(directory=app.config['CLIENT_FILES'], path=videoFileName, as_attachment = True)
     except FileNotFoundError:
         abort(404)
 
