@@ -6,14 +6,14 @@ import eyed3
 from werkzeug.datastructures import FileStorage
 from moviepy.editor import VideoFileClip
 
-UPLOAD_FOLDER = './upload-files'
+#file pathname separator
+sep = os.sep
+
+UPLOAD_FOLDER = '.' + sep + 'upload-files'
 app = Flask(__name__)
 
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-app.config['CLIENT_MUSIC'] = "/home/peter/Desktop/Mp3-Mp4-Youtube-Downloader"
-
-#file pathname separator
-sep = os.sep
+app.config['CLIENT_MUSIC'] = os.path.expanduser("~" + sep + "Desktop" + sep + "Mp3-Mp4-Youtube-Downloader")
 
 #original app route to index page
 @app.route('/')
@@ -199,7 +199,7 @@ def mp3_metadata_editor():
         if cover_art_file.filename == '':   #here we check if the request includes a cover art file
             print('inside first if block')
             flag_no_cover_user = True
-            with open('./upload-files/default-cover.jpeg', "rb") as fp:
+            with open('.'+sep+'upload-files'+sep+'default-cover.jpeg', "rb") as fp:
                 cover_art_file = FileStorage(fp, content_type='image/jpeg')
                 
             print(cover_art_file)
@@ -236,16 +236,16 @@ def mp3_metadata_editor():
                     with open(cover_art_file.filename, "rb") as cover_art:
                         audioFile.tag.images.set(3, cover_art.read(), "image/jpeg")
                 else:
-                    with open(UPLOAD_FOLDER + "/" + cover_art_file.filename, "rb") as cover_art:
+                    with open(UPLOAD_FOLDER + sep + cover_art_file.filename, "rb") as cover_art:
                         audioFile.tag.images.set(0, cover_art.read(), "image/jpeg")
 
-                    with open(UPLOAD_FOLDER + "/" + cover_art_file.filename, "rb") as cover_art:
+                    with open(UPLOAD_FOLDER + sep + cover_art_file.filename, "rb") as cover_art:
                         audioFile.tag.images.set(3, cover_art.read(), "image/jpeg")
 
                 audioFile.tag.save()
 
                 os.rename(songFileName, artist + " - " + title + ".mp3")
-                os.remove(UPLOAD_FOLDER + "/" + cover_art_file.filename)
+                os.remove(UPLOAD_FOLDER + sep + cover_art_file.filename)
                 global finalFileNameMp3
                 finalFileNameMp3 = artist + " - " + title + ".mp3"
         except IOError:
