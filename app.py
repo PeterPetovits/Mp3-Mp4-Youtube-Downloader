@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, send_from_directory, abort
 import os
 from pytube import YouTube
 import ffmpeg
@@ -10,6 +10,7 @@ UPLOAD_FOLDER = './upload-files'
 app = Flask(__name__)
 
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.config['CLIENT_MUSIC'] = "/home/peter/Desktop/Mp3-Mp4-Youtube-Downloader"
 
 #file pathname separator
 sep = os.sep
@@ -253,9 +254,19 @@ def mp3_metadata_editor():
         return render_template('index.html', result = "Download Complete", option_form_mp3 = "mp3", metadata_editor_open = "open", trimmer_open = "open", player_button_open = "open")
     return render_template('index.html')
 
+#render mp3 player page in browser
 @app.route('/mp3_player', methods= ["GET", "POST"])
 def mp3_player():
     return render_template('mp3-player-One.html')
+
+#download the final file to downloads folder in user's computer
+@app.route('/download_file', methods = ["GET", "POST"])
+def download_file():
+    try:
+        print(finalFileNameMp3)
+        return send_from_directory(directory = app.config['CLIENT_MUSIC'], path = finalFileNameMp3, as_attachment = True)
+    except FileNotFoundError:
+        abort(404)
 
 
 if __name__ == "__main__":
