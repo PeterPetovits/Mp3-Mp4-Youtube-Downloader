@@ -1,4 +1,4 @@
-from flask import Flask, render_template, url_for, request, redirect
+from flask import Flask, render_template, request
 import os
 from pytube import YouTube
 import ffmpeg

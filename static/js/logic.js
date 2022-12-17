@@ -19,7 +19,6 @@ let updateTimer;
 
 const jsmediatags = window.jsmediatags;
 
-
 // Define the list of tracks that have to be played
 let track_list = [
     {
@@ -27,11 +26,15 @@ let track_list = [
       artist: "",
       image: "",
       path: ""
-    },
+    }
 ];
+
+// Create the audio element for the player
+var curr_track = document.createElement('audio');
 
 document.querySelector("#input-file").addEventListener("change", (event) => {
     const file = event.target.files[0];
+    var url = URL.createObjectURL(file);
 
     jsmediatags.read(file, {
         onSuccess: function(tag){
@@ -45,11 +48,12 @@ document.querySelector("#input-file").addEventListener("change", (event) => {
 
             track_list[track_index].name = tag.tags.title;
             track_list[track_index].artist = tag.tags.artist;
-            track_list[track_index].image = `url(data:${format};base64, ${window.btoa(base64String)})`;
-            track_list[track_index].path = "/temp-audio" + file.name;
-            console.log(file)
+            track_list[track_index].image = `url(data:${format};base64,${window.btoa(base64String)})`;
+            track_list[track_index].path = url;
+
             loadTrack(track_index);
         },
+
         onError: function(error){
             console.log(error);
         }
@@ -57,20 +61,17 @@ document.querySelector("#input-file").addEventListener("change", (event) => {
 })
 
 
-// Create the audio element for the player
-let curr_track = document.createElement('audio');
-
 function loadTrack(track_index) {
     // Clear the previous seek timer
     clearInterval(updateTimer);
     resetValues();
    
     // Load a new track
-    curr_track.src = track_list[track_index].path;
+    curr_track.setAttribute('src', track_list[track_index].path);
     curr_track.load();
-   
+    
     // Update details of the track
-    track_art.style.backgroundImage = "url(" + track_list[track_index].image + ")";
+    track_art.style.backgroundImage = track_list[track_index].image;
     track_name.textContent = track_list[track_index].name;
     track_artist.textContent = track_list[track_index].artist;
     now_playing.textContent = "PLAYING " + (track_index + 1) + " OF " + track_list.length;
@@ -198,4 +199,3 @@ function seekUpdate() {
       total_duration.textContent = durationMinutes + ":" + durationSeconds;
     }
 }
-

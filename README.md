@@ -38,3 +38,4 @@ Programs we need to install:
         For Linux: sudo apt install ffmpeg
         For Windows download ffmpeg exe and add it to PATH (if not already done it)
     11. Inside virtual environment install dependency ffmpeg-python a python wrapper of ffmpeg, type "pip install ffmpeg-python"
+    12. For the mp4 trimmer install moviepy library: pip install moviepy
