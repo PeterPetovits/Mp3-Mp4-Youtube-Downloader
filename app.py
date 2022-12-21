@@ -198,7 +198,7 @@ def mp3_metadata_editor():
         flag_no_cover_user = False
         if cover_art_file.filename == '':   #here we check if the request includes a cover art file
             flag_no_cover_user = True
-            with open('.'+sep+'upload-files'+sep+'default-cover.jpeg', "rb") as fp:
+            with open('.'+sep+'default-cover.jpeg', "rb") as fp:
                 cover_art_file = FileStorage(fp, content_type='image/jpeg')
         else:
             cover_art_file.save(os.path.join(app.config['UPLOAD_FOLDER'], cover_art_file.filename))
@@ -211,9 +211,6 @@ def mp3_metadata_editor():
         os.system("ffmpeg -i temp.mp3 -ab 320k temp2.mp3")
         os.rename("temp2.mp3", songFileName)
         os.remove("temp.mp3")
-
-        print("HERE 3")
-        global finalFileNameMp3
 
         try:
             audioFile = eyed3.load(songFileName)
@@ -244,14 +241,12 @@ def mp3_metadata_editor():
 
                 audioFile.tag.save()
 
-                print("HERE 1")
                 os.rename(songFileName, artist + " - " + title + ".mp3")
-                print("HERE 2")
-                os.remove(UPLOAD_FOLDER + sep + cover_art_file.filename)
-                print("HERE 4")
+                if(flag_no_cover_user == False):
+                    os.remove(app.config['UPLOAD_FOLDER']+ sep + cover_art_file.filename)
+               
+                global finalFileNameMp3
                 finalFileNameMp3 = artist + " - " + title + ".mp3"
-                print("HERE 5")
-
         except IOError:
             IOError
         
@@ -275,7 +270,7 @@ def download_file():
 @app.route('/download_mp4_file', methods = ["GET", "POST"])
 def download_mp4_file():
     try:
-        return send_from_directory(directory=app.config['CLIENT_FILES'], path=videoFileName, as_attachment = True)
+        return send_from_directory(directory = app.config['CLIENT_FILES'], path = videoFileName, as_attachment = True)
     except FileNotFoundError:
         abort(404)
 
