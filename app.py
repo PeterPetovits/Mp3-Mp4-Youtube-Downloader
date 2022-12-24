@@ -13,7 +13,7 @@ UPLOAD_FOLDER = '.' + sep + 'upload-files'
 app = Flask(__name__)
 
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-app.config['CLIENT_FILES'] = os.path.expanduser("~" + sep + "Desktop" + sep + "Mp3-Mp4-Youtube-Downloader")
+app.config['CLIENT_FILES'] = os.getcwd()
 
 #original app route to index page
 @app.route('/')
@@ -123,7 +123,7 @@ def trimmer_editor():
         if start == '' and end == '':       #if no values for trim have been inserted, just default passthrough to trimmer library
             os.system("trimmer " + '"' + songFileNameToTrimmer + '"' + " --title tempTitle --artist tempArtist")
             fileNameDownloadPath = str("tempArtist - tempTitle.mp3")
-            return render_template('index.html', result = "Download Complete", option_form_mp3 = "mp3", trimmer_open = "open", result_trimmer = "Trim not applied", metadata_editor_open = "open")
+            return render_template('index.html', result = "Download Complete", option_form_mp3 = "mp3", trimmer_open = "open", result_trimmer = "Default trim applied", metadata_editor_open = "open")
         elif start != '' and end == '':     #if only start value for trim has been inserted
             os.system("trimmer " + '"' + songFileNameToTrimmer + '"' + " --trim-start " + start + " --title tempTitle --artist tempArtist")
             fileNameDownloadPath = str("tempArtist - tempTitle.mp3")
@@ -186,10 +186,19 @@ def mp4_trimmer_editor():
 def mp3_metadata_editor():
     if request.method == "POST":
 
-        artist = str(request.form.get("artist"))
+        in_artist = str(request.form.get("artist"))
+        in_title = str(request.form.get("title"))
+
+        if (in_artist!="tempArtist"):
+            artist = in_artist
+        else:
+            artist = ''
         album = str(request.form.get("album"))
         album_artist = str(request.form.get("album_artist"))
-        title = str(request.form.get("title"))
+        if (in_title!="tempTitle"):
+            title = in_title
+        else:
+            title=''
         track_number = str(request.form.get("track_number"))
         genre = str(request.form.get("genre"))
         year = str(request.form.get("year"))
@@ -241,12 +250,18 @@ def mp3_metadata_editor():
 
                 audioFile.tag.save()
 
-                os.rename(songFileName, artist + " - " + title + ".mp3")
+                global finalFileNameMp3
+
+                if (artist=='' or title==''):
+                    finalFileNameMp3 = songFileNameToTrimmer
+                else:
+                    finalFileNameMp3 = artist + " - " + title + ".mp3"
+                os.rename(songFileName, finalFileNameMp3)
+
                 if(flag_no_cover_user == False):
                     os.remove(app.config['UPLOAD_FOLDER']+ sep + cover_art_file.filename)
-               
-                global finalFileNameMp3
-                finalFileNameMp3 = artist + " - " + title + ".mp3"
+
+
         except IOError:
             IOError
         
