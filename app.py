@@ -267,7 +267,7 @@ def mp3_player():
 
 @app.route('/mp4_player', methods=["GET", "POST"])
 def mp4_player():
-    return render_template('mp4-player.html', videoFileToPlay = app.config['CLIENT_FILES'] + "/" + videoFileName)
+    return render_template('mp4-player.html')
 
 #download the final music file to downloads folder in user's computer
 @app.route('/download_file', methods = ["GET", "POST"])
