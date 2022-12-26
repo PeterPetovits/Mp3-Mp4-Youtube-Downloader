@@ -9,7 +9,11 @@
 
     <body>
         <form action="{{url_for('download_mp4_file')}}" method="post">
-            <button id="mp3-download-button">Download Video File</button>
+            <button id="mp4-download-button">Download Video File</button>
+        </form>
+
+        <form action="{{url_for('mp4_player')}}" method="post">
+            <button id="mp4-player-button">Play MP4 Now</button>
         </form>
     </body>
 </html>

@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="{{ url_for('static', filename = 'css/mp4-player-style.css')}}">
+        <title>Simple MP4 Player</title>
+    </head>
+
+    <body>
+        <div id="video-box"></div>
+       
+        <div id="drop-area">
+            <p>Select a file with the file dialog or by dragging and dropping a video onto the dashed region</p>
+              <input type="file" id="fileElem" accept=".mp4">
+              <label class="button" for="fileElem">Select some files</label>
+        </div>
+
+        <!-- Load the main script for the player -->
+        <script src="{{ url_for('static', filename = 'js/mp4-logic.js')}}"></script>
+    </body>
+</html>

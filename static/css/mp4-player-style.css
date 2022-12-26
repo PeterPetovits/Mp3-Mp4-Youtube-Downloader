@@ -1,0 +1,50 @@
+body{
+    font-family: sans-serif;
+    background-color: cadetblue;
+}
+
+a{
+    color: #369;
+}
+  
+#drop-area {
+    border: 2px dashed #ccc;
+    border-radius: 20px;
+    width: 480px;
+    margin: 50px auto;
+    padding: 20px;
+}
+
+#drop-area.highlight {
+    border-color: purple;
+}
+
+p {
+    margin-top: 0;
+}
+
+.button {
+    display: inline-block;
+    padding: 10px;
+    background: #ccc;
+    cursor: pointer;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+.button:hover {
+    background: #ddd;
+}
+
+#fileElem {
+    display: none;
+}
+
+#video-box{
+   width: 5000px;
+   height: 500px;
+   padding: 10px;
+   margin-left: 500px;
+   margin-right: 500px;
+   display: flex;
+}

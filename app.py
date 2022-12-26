@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, send_from_directory, abort
+from flask import Flask, render_template, request, send_from_directory, abort, redirect
 import os
 from pytube import YouTube
 import ffmpeg
@@ -136,13 +136,6 @@ def trimmer_editor():
             os.system("trimmer " + '"' + songFileNameToTrimmer + '"' + " --trim-start " + start + " --trim-end " + end + " --title tempTitle --artist tempArtist")
             fileNameDownloadPath = str("tempArtist - tempTitle.mp3")
             return render_template('index.html', result = "Download Complete", option_form_mp3 = "mp3", trimmer_open = "open", result_trimmer = "Trim Done", metadata_editor_open = "open")
-
-        #os.system("trimmer " + '"' + songFileNameToTrimmer + '"' + " --trim-start " + start + " --trim-end " + end + " --title tempTitle --artist tempArtist")
-
-        #global fileNameDownloadPath
-        #fileNameDownloadPath = str("tempArtist - tempTitle.mp3")
-
-        #return render_template('index.html', result = "Download Complete", option_form_mp3 = "mp3", trimmer_open = "open", result_trimmer = "Trim Done", metadata_editor_open = "open")
     return render_template('index.html')
 
 
@@ -212,7 +205,6 @@ def mp3_metadata_editor():
         else:
             cover_art_file.save(os.path.join(app.config['UPLOAD_FOLDER'], cover_art_file.filename))
 
-        #useless, songFileName = fileNameDownloadPath.split('/./')
 
         songFileName = fileNameDownloadPath
 
@@ -272,6 +264,10 @@ def mp3_metadata_editor():
 @app.route('/mp3_player', methods= ["GET", "POST"])
 def mp3_player():
     return render_template('mp3-player-One.html')
+
+@app.route('/mp4_player', methods=["GET", "POST"])
+def mp4_player():
+    return render_template('mp4-player.html', videoFileToPlay = app.config['CLIENT_FILES'] + "/" + videoFileName)
 
 #download the final music file to downloads folder in user's computer
 @app.route('/download_file', methods = ["GET", "POST"])
