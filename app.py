@@ -99,8 +99,9 @@ def mp4_download():
             destination = '.'
             p = Playlist(youtube_link)
             for video in p.videos:
+                # get the highest available quality not exceeding the chosen quality
                 v_quality = video.streams.get_highest_resolution().resolution
-                if int(v_quality.replace("p","")) > int(video_quality.replace("p","")): # keep the highest of chosen and max quality
+                if int(v_quality.replace("p","")) > int(video_quality.replace("p","")): # keep the lowest of chosen and max quality
                     v_quality = video_quality
                 fileNameDownloadPathVideoOnly = video.streams.filter(res = v_quality).first().download('.'+sep+'temp-video')
                 #yt.streams.filter(progressive=True, file_extension='mp4').order_by('resolution').desc().first().download('.')
@@ -130,8 +131,9 @@ def mp4_download():
             return render_template('index.html', result = "Download Complete", option_form_mp4 = "mp4")
         else:
             yt = YouTube(str(youtube_link))
+            # get the highest available quality not exceeding the chosen quality
             v_quality = yt.streams.get_highest_resolution().resolution
-            if int(v_quality.replace("p","")) > int(video_quality.replace("p","")): # keep the highest of chosen and max quality
+            if int(v_quality.replace("p","")) > int(video_quality.replace("p","")): # keep the lowest of chosen and max quality
                 v_quality = video_quality
             fileNameDownloadPathVideoOnly = yt.streams.filter(res = v_quality).first().download('.'+sep+'temp-video')
             #yt.streams.filter(progressive=True, file_extension='mp4').order_by('resolution').desc().first().download('.')
