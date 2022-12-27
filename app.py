@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, send_from_directory, abort, redirect
 import os
-from pytube import YouTube
+from pytube import YouTube, Playlist
 import ffmpeg
 import eyed3
 from werkzeug.datastructures import FileStorage
@@ -42,32 +42,49 @@ def mp4_option_button():
 def mp3_download():
     if request.method == "POST":
         youtube_link = request.form.get("youtube_link")
-        yt = YouTube(str(youtube_link))
+        
+        if "playlist" in youtube_link:
+            destination = '.'
+            p = Playlist(youtube_link)
+            for video in p.videos:
+                out_file = video.streams.filter(only_audio=True).first().download(output_path=destination) # download audio
+                uselesspath, regFileName = os.path.split(out_file) # keep regularized filename because yt title can have illegal characters
+                base, ext = os.path.splitext(out_file)
+                new_file = base + '.mp3'
+                os.system("ffmpeg -i " + '"' + regFileName + '" "' + new_file + '"') # mp4 to mp3
+                os.remove(regFileName)
+            return render_template('index.html', result = "Download Complete", option_form_mp3 = "mp3")
+        else: # single video
+            yt = YouTube(str(youtube_link))
   
-        # extract only audio
-        video = yt.streams.filter(only_audio=True).first()
-        
-        # check for destination to save file
-        destination = '.'
-        
-        # download the file
-        out_file = video.download(output_path=destination)
-        
-        # save the file
-        base, ext = os.path.splitext(out_file)
-        new_file = base + '.mp3'
-        os.rename(out_file, new_file)
+            # extract only audio
+            video = yt.streams.filter(only_audio=True).first()
+            
+            # check for destination to save file
+            destination = '.'
+            
+            # download the file
+            out_file = video.download(output_path=destination)
 
-        global fileNameDownloadPath
-        fileNameDownloadPath = new_file
+            # save the file
+            uselesspath, regFileName = os.path.split(out_file) # keep regularized filename because yt title can have illegal characters
+            base, ext = os.path.splitext(out_file)
+            new_file = base + '.mp3'
+            os.system("ffmpeg -i " + '"' + regFileName + '" "' + new_file + '"') # mp4 to mp3
+            os.remove(regFileName)
 
-        global songFileNameToTrimmer
-        useless, songFileNameToTrimmer = fileNameDownloadPath.split(sep+'.'+sep)
-        os.rename(songFileNameToTrimmer, "temp-download.mp3")
-        os.system("ffmpeg -i temp-download.mp3 -ab 320k temp.mp3")
-        os.rename("temp.mp3", songFileNameToTrimmer)
-        os.remove("temp-download.mp3")
-        return render_template('index.html', result = "Download Complete", file = fileNameDownloadPath, option_form_mp3 = "mp3", trimmer_open = "open")
+            global fileNameDownloadPath
+            fileNameDownloadPath = new_file
+
+            global songFileNameToTrimmer
+            useless, songFileNameToTrimmer = fileNameDownloadPath.split(sep+'.'+sep)
+            os.rename(songFileNameToTrimmer, "temp-download.mp3")
+            os.system("ffmpeg -i temp-download.mp3 -ab 320k temp.mp3")
+            os.rename("temp.mp3", songFileNameToTrimmer)
+            os.remove("temp-download.mp3")
+            return render_template('index.html', result = "Download Complete", file = fileNameDownloadPath, option_form_mp3 = "mp3", trimmer_open = "open")
+            
+
     return render_template('index.html')
 
 
@@ -75,38 +92,43 @@ def mp3_download():
 @app.route('/mp4_download', methods= ["GET", "POST"])
 def mp4_download():
     if request.method == "POST":
-        youtube_link = request.form.get("youtube_link")
-        video_quality = request.form.get("video_quality")
-
-        yt = YouTube(str(youtube_link))
-        v_quality = str(video_quality)
-        fileNameDownloadPathVideoOnly = yt.streams.filter(res = v_quality).first().download('.'+sep+'temp-video')
-        #yt.streams.filter(progressive=True, file_extension='mp4').order_by('resolution').desc().first().download('.')
-        
-        global videoFileName
-        useless, videoFileName = fileNameDownloadPathVideoOnly.split('.'+sep+'temp-video'+sep)   #keep the video file name for later in order to save it
-
-        yt = YouTube(str(youtube_link))
-        out_file = yt.streams.filter(only_audio=True).first().download('.'+sep+'temp-audio')  #extract audio only
-        
-        # save the file
-        base, ext = os.path.splitext(out_file)
-        new_file = base + '_audio.mp4'
-        os.rename(out_file, new_file)
-
-        fileNameDownloadPathAudioOnly = new_file
-
-        video_stream = ffmpeg.input(fileNameDownloadPathVideoOnly)
-        audio_stream = ffmpeg.input(fileNameDownloadPathAudioOnly)
-        ffmpeg.output(audio_stream, video_stream, videoFileName).run()
-
-        if os.path.exists(str(fileNameDownloadPathVideoOnly)) and os.path.exists(str(fileNameDownloadPathAudioOnly)):       #delete the temp video and audio files
-            os.remove(str(fileNameDownloadPathAudioOnly))
-            os.remove(str(fileNameDownloadPathVideoOnly))
+        if "playlist" in youtube_link:
+            return # must add playlist download mp4
         else:
-            print("The files do not exist")
+            youtube_link = request.form.get("youtube_link")
+            video_quality = request.form.get("video_quality")
 
-        return render_template('index.html', result = "Download Complete", filePath = videoFileName, option_form_mp4 = "mp4", mp4_trimmer_open = "open")
+            yt = YouTube(str(youtube_link))
+            v_quality = str(video_quality)
+            fileNameDownloadPathVideoOnly = yt.streams.filter(res = v_quality).first().download('.'+sep+'temp-video')
+            #yt.streams.filter(progressive=True, file_extension='mp4').order_by('resolution').desc().first().download('.')
+            
+            global videoFileName
+            useless, videoFileName = fileNameDownloadPathVideoOnly.split('.'+sep+'temp-video'+sep)   #keep the video file name for later in order to save it
+
+            yt = YouTube(str(youtube_link))
+            out_file = yt.streams.filter(only_audio=True).first().download('.'+sep+'temp-audio')  #extract audio only
+            
+            # save the file
+            base, ext = os.path.splitext(out_file)
+            print(ext)
+            new_file = base + '_audio.mp4'
+            os.rename(out_file, new_file)
+
+            fileNameDownloadPathAudioOnly = new_file
+
+            video_stream = ffmpeg.input(fileNameDownloadPathVideoOnly)
+            audio_stream = ffmpeg.input(fileNameDownloadPathAudioOnly)
+            ffmpeg.output(audio_stream, video_stream, videoFileName).run()
+
+            if os.path.exists(str(fileNameDownloadPathVideoOnly)) and os.path.exists(str(fileNameDownloadPathAudioOnly)):       #delete the temp video and audio files
+                os.remove(str(fileNameDownloadPathAudioOnly))
+                os.remove(str(fileNameDownloadPathVideoOnly))
+            else:
+                print("The files do not exist")
+
+            return render_template('index.html', result = "Download Complete", filePath = videoFileName, option_form_mp4 = "mp4", mp4_trimmer_open = "open")
+    
     return render_template('index.html')
 
 
