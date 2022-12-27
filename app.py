@@ -91,22 +91,53 @@ def mp3_download():
 #mp4 download function after link inserted
 @app.route('/mp4_download', methods= ["GET", "POST"])
 def mp4_download():
+    youtube_link = request.form.get("youtube_link")
+    video_quality = request.form.get("video_quality")
+    global videoFileName
     if request.method == "POST":
         if "playlist" in youtube_link:
-            return # must add playlist download mp4
-        else:
-            youtube_link = request.form.get("youtube_link")
-            video_quality = request.form.get("video_quality")
+            destination = '.'
+            p = Playlist(youtube_link)
+            for video in p.videos:
+                v_quality = video.streams.get_highest_resolution().resolution
+                if int(v_quality.replace("p","")) > int(video_quality.replace("p","")): # keep the highest of chosen and max quality
+                    v_quality = video_quality
+                fileNameDownloadPathVideoOnly = video.streams.filter(res = v_quality).first().download('.'+sep+'temp-video')
+                #yt.streams.filter(progressive=True, file_extension='mp4').order_by('resolution').desc().first().download('.')
+                
+                useless, videoFileName = fileNameDownloadPathVideoOnly.split('.'+sep+'temp-video'+sep)   #keep the video file name for later in order to save it
 
+                out_file = video.streams.filter(only_audio=True).first().download('.'+sep+'temp-audio')  #extract audio only
+                
+                # save the file
+                base, ext = os.path.splitext(out_file)
+                print(ext)
+                new_file = base + '_audio.mp4'
+                os.rename(out_file, new_file)
+
+                fileNameDownloadPathAudioOnly = new_file
+
+                video_stream = ffmpeg.input(fileNameDownloadPathVideoOnly)
+                audio_stream = ffmpeg.input(fileNameDownloadPathAudioOnly)
+                ffmpeg.output(audio_stream, video_stream, videoFileName).run()
+
+                if os.path.exists(str(fileNameDownloadPathVideoOnly)) and os.path.exists(str(fileNameDownloadPathAudioOnly)):       #delete the temp video and audio files
+                    os.remove(str(fileNameDownloadPathAudioOnly))
+                    os.remove(str(fileNameDownloadPathVideoOnly))
+                else:
+                    print("The files do not exist")
+
+            return render_template('index.html', result = "Download Complete", option_form_mp4 = "mp4")
+        else:
             yt = YouTube(str(youtube_link))
-            v_quality = str(video_quality)
+            v_quality = yt.streams.get_highest_resolution().resolution
+            if int(v_quality.replace("p","")) > int(video_quality.replace("p","")): # keep the highest of chosen and max quality
+                v_quality = video_quality
             fileNameDownloadPathVideoOnly = yt.streams.filter(res = v_quality).first().download('.'+sep+'temp-video')
             #yt.streams.filter(progressive=True, file_extension='mp4').order_by('resolution').desc().first().download('.')
             
-            global videoFileName
             useless, videoFileName = fileNameDownloadPathVideoOnly.split('.'+sep+'temp-video'+sep)   #keep the video file name for later in order to save it
 
-            yt = YouTube(str(youtube_link))
             out_file = yt.streams.filter(only_audio=True).first().download('.'+sep+'temp-audio')  #extract audio only
             
             # save the file
