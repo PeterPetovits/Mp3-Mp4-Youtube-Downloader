@@ -6,6 +6,7 @@ import eyed3
 from werkzeug.datastructures import FileStorage
 from moviepy.editor import VideoFileClip
 from pytube.helpers import safe_filename
+import shutil
 
 #file pathname separator
 sep = os.sep
@@ -49,6 +50,7 @@ def mp3_download():
             destination = '.' + sep + safe_filename(p.title)
             os.mkdir(destination) # create playlist folder
             os.chdir(destination) # change working directory to inside of playlist folder
+
             for video in p.videos:
                 out_file = video.streams.filter(only_audio=True).first().download() # download audio
                 uselesspath, regFileName = os.path.split(out_file) # keep regularized filename because yt title can have illegal characters
@@ -57,8 +59,13 @@ def mp3_download():
                 os.system("ffmpeg -i " + '"' + regFileName + '" "' + new_file + '"') # mp4 to mp3
                 os.remove(regFileName)
             os.chdir("..") # change working directory back to project folder
+
+            shutil.make_archive(destination, 'zip', destination)       #make a zip folder of all mp3 songs to download it later as one file
+
+            global finalFileNameMp3
+            finalFileNameMp3 = destination + ".zip"   #save final playlist folder of mp3s, to download it later
             
-            return render_template('index.html', result = "Download Complete", option_form_mp3 = "mp3")
+            return render_template('index.html', result = "Download Complete", option_form_mp3 = "mp3", player_button_open = "open")
         else: # single video
             yt = YouTube(str(youtube_link))
   
@@ -87,7 +94,7 @@ def mp3_download():
             os.system("ffmpeg -i temp-download.mp3 -ab 320k temp.mp3")
             os.rename("temp.mp3", songFileNameToTrimmer)
             os.remove("temp-download.mp3")
-            return render_template('index.html', result = "Download Complete", file = fileNameDownloadPath, option_form_mp3 = "mp3", trimmer_open = "open")
+            return render_template('index.html', result = "Download Complete", option_form_mp3 = "mp3", trimmer_open = "open")
             
 
     return render_template('index.html')
@@ -98,6 +105,7 @@ def mp3_download():
 def mp4_download():
     youtube_link = request.form.get("youtube_link")
     video_quality = request.form.get("video_quality")
+
     global videoFileName
     if request.method == "POST":
         if "playlist" in youtube_link:
@@ -139,7 +147,11 @@ def mp4_download():
             os.rmdir("temp-video")
             os.chdir("..") # change working directory back to project folder
 
-            return render_template('index.html', result = "Download Complete", option_form_mp4 = "mp4")
+            shutil.make_archive(destination, 'zip', destination)       #make a zip folder of all mp3 songs to download it later as one file
+
+            videoFileName = destination + ".zip"   #save final playlist folder of mp3s, to download it later
+
+            return render_template('index.html', result = "Download Complete", option_form_mp4 = "mp4", mp4_download_button_open = "open")
         else:
             yt = YouTube(str(youtube_link))
             # get the highest available quality not exceeding the chosen quality
@@ -174,7 +186,7 @@ def mp4_download():
             os.rmdir("temp-audio") # remove temp directories
             os.rmdir("temp-video")
 
-            return render_template('index.html', result = "Download Complete", filePath = videoFileName, option_form_mp4 = "mp4", mp4_trimmer_open = "open")
+            return render_template('index.html', result = "Download Complete", option_form_mp4 = "mp4", mp4_trimmer_open = "open")
     
     return render_template('index.html')
 
