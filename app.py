@@ -5,6 +5,7 @@ import ffmpeg
 import eyed3
 from werkzeug.datastructures import FileStorage
 from moviepy.editor import VideoFileClip
+from pytube.helpers import safe_filename
 
 #file pathname separator
 sep = os.sep
@@ -44,15 +45,19 @@ def mp3_download():
         youtube_link = request.form.get("youtube_link")
         
         if "playlist" in youtube_link:
-            destination = '.'
             p = Playlist(youtube_link)
+            destination = '.' + sep + safe_filename(p.title)
+            os.mkdir(destination) # create playlist folder
+            os.chdir(destination) # change working directory to inside of playlist folder
             for video in p.videos:
-                out_file = video.streams.filter(only_audio=True).first().download(output_path=destination) # download audio
+                out_file = video.streams.filter(only_audio=True).first().download() # download audio
                 uselesspath, regFileName = os.path.split(out_file) # keep regularized filename because yt title can have illegal characters
                 base, ext = os.path.splitext(out_file)
                 new_file = base + '.mp3'
                 os.system("ffmpeg -i " + '"' + regFileName + '" "' + new_file + '"') # mp4 to mp3
                 os.remove(regFileName)
+            os.chdir("..") # change working directory back to project folder
+            
             return render_template('index.html', result = "Download Complete", option_form_mp3 = "mp3")
         else: # single video
             yt = YouTube(str(youtube_link))
@@ -96,8 +101,10 @@ def mp4_download():
     global videoFileName
     if request.method == "POST":
         if "playlist" in youtube_link:
-            destination = '.'
             p = Playlist(youtube_link)
+            destination = '.' + sep + safe_filename(p.title)
+            os.mkdir(destination) # create playlist folder
+            os.chdir(destination) # change working directory to inside of playlist folder
             for video in p.videos:
                 # get the highest available quality not exceeding the chosen quality
                 v_quality = video.streams.get_highest_resolution().resolution
@@ -127,6 +134,10 @@ def mp4_download():
                     os.remove(str(fileNameDownloadPathVideoOnly))
                 else:
                     print("The files do not exist")
+
+            os.rmdir("temp-audio") # remove temp directories
+            os.rmdir("temp-video")
+            os.chdir("..") # change working directory back to project folder
 
             return render_template('index.html', result = "Download Complete", option_form_mp4 = "mp4")
         else:
@@ -159,6 +170,9 @@ def mp4_download():
                 os.remove(str(fileNameDownloadPathVideoOnly))
             else:
                 print("The files do not exist")
+
+            os.rmdir("temp-audio") # remove temp directories
+            os.rmdir("temp-video")
 
             return render_template('index.html', result = "Download Complete", filePath = videoFileName, option_form_mp4 = "mp4", mp4_trimmer_open = "open")
     
