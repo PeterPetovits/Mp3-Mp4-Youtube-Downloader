@@ -1,24 +1,3 @@
-// Select elements here
-//const video = document.getElementById('video');
-
-//here we check if the browser is able to play videos from our custom player
-/** 
-document.querySelector("#input-video-file").addEventListener("change", (event) =>{
-    const video = document.createElement('video');
-    const box = document.getElementById('video-box');
-
-    if (video.canPlayType) {
-        const file = event.target.files[0];
-        var url = URL.createObjectURL(file);
-        video.src = url;
-        video.controls = true;
-        video.muted = false;
-        video.autoplay = true;
-        box.append(video);
-    }
-})
-*/
-
 window.onload = function(){
 
     let dropArea = document.getElementById("drop-area");

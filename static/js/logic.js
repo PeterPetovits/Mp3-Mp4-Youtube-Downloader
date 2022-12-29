@@ -20,46 +20,47 @@ let updateTimer;
 const jsmediatags = window.jsmediatags;
 
 // Define the list of tracks that have to be played
-let track_list = [
-    {
-      name: "",
-      artist: "",
-      image: "",
-      path: ""
-    }
-];
+let track_list = [];
 
 // Create the audio element for the player
 var curr_track = document.createElement('audio');
 
 document.querySelector("#input-file").addEventListener("change", (event) => {
-    const file = event.target.files[0];
-    var url = URL.createObjectURL(file);
+    const files = event.target.files;
+    
+    for(let i = 0; i < files.length; i++){
+        var file = event.target.files[i];
 
-    jsmediatags.read(file, {
-        onSuccess: function(tag){
-            const data = tag.tags.picture.data;
-            const format = tag.tags.picture.format;
-            let base64String = "";
+        jsmediatags.read(file, {
+            onSuccess: function(tag){
+                var data = tag.tags.picture.data;
+                var format = tag.tags.picture.format;
+                let base64String = "";
+    
+                for(let i = 0; i < data.length; i++){
+                    base64String += String.fromCharCode(data[i]);
+                }
 
-            for(let i = 0; i < data.length; i++){
-                base64String += String.fromCharCode(data[i]);
+                let url = URL.createObjectURL(file);
+
+                let song = {
+                    name: tag.tags.title,
+                    artist: tag.tags.artist,
+                    image: `url(data:${format};base64,${window.btoa(base64String)})`,
+                    path: url
+                };
+                   
+                track_list.push(song);  
+            },
+    
+            onError: function(error){
+                console.log(error);
             }
+        })
+    }
 
-            track_list[track_index].name = tag.tags.title;
-            track_list[track_index].artist = tag.tags.artist;
-            track_list[track_index].image = `url(data:${format};base64,${window.btoa(base64String)})`;
-            track_list[track_index].path = url;
-
-            loadTrack(track_index);
-        },
-
-        onError: function(error){
-            console.log(error);
-        }
-    })
+    setTimeout(loadTrack, 1000, track_index);
 })
-
 
 function loadTrack(track_index) {
     // Clear the previous seek timer
