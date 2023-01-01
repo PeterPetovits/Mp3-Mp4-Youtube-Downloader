@@ -33,13 +33,6 @@ document.querySelector("#input-file").addEventListener("change", (event) => {
 
         jsmediatags.read(file, {
             onSuccess: function(tag){
-                var data = tag.tags.picture.data;
-                var format = tag.tags.picture.format;
-                let base64String = "";
-    
-                for(let i = 0; i < data.length; i++){
-                    base64String += String.fromCharCode(data[i]);
-                }
 
                 let url = URL.createObjectURL(file);
 
@@ -50,22 +43,43 @@ document.querySelector("#input-file").addEventListener("change", (event) => {
                     path: url
                 };
 
-                if (tag.tags.title != undefined) {
-                    song.name = tag.tags.title;
-                } 
-                else {
+                if(tag.tags.picture == undefined){      //if no picture present has no metadata at all
                     song.name = file.name;
-                }
+                    //no need for artist if no metadata just use file name
+                    song.image = "https://source.unsplash.com/Qrspubmx6kE/640x360";
+                    //music file's url is already added above
 
-                if (tag.tags.artist != undefined) {
+                    track_list.push(song);
+                }else if(tag.tags.title == undefined || tag.tags.artist == undefined){
+                    song.name = file.name;
+                    //no need for artist if no metadata just use file name
+                    var data = tag.tags.picture.data;
+                    var format = tag.tags.picture.format;
+                    let base64String = "";
+
+                    for(let i = 0; i < data.length; i++){
+                        base64String += String.fromCharCode(data[i]);
+                    }
+
+                    song.image = `url(data:${format};base64,${window.btoa(base64String)})`;
+
+                    track_list.push(song);
+                }else{
+                    song.name = tag.tags.title;
                     song.artist = tag.tags.artist;
-                }
 
-                /*if (THE FILE HAS AN IMAGE) {
-                    song.image: = `url(data:${format};base64,${window.btoa(base64String)})`
-                }*/
-                   
-                track_list.push(song);  
+                    var data = tag.tags.picture.data;
+                    var format = tag.tags.picture.format;
+                    let base64String = "";
+
+                    for(let i = 0; i < data.length; i++){
+                        base64String += String.fromCharCode(data[i]);
+                    }
+
+                    song.image = `url(data:${format};base64,${window.btoa(base64String)})`;
+
+                    track_list.push(song);
+                }
             },
     
             onError: function(error){
