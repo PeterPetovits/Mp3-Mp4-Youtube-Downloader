@@ -47,7 +47,7 @@ def mp3_download():
         
         if "playlist" in youtube_link:
             p = Playlist(youtube_link)
-            destination = '.' + sep + safe_filename(p.title)
+            destination = safe_filename(p.title)
             os.mkdir(destination) # create playlist folder
             os.chdir(destination) # change working directory to inside of playlist folder
 
@@ -83,6 +83,7 @@ def mp3_download():
             base, ext = os.path.splitext(out_file)
             new_file = base + '.mp3'
             os.system("ffmpeg -i " + '"' + regFileName + '" "' + new_file + '"') # mp4 to mp3
+            print(regFileName,"Hey!")
             os.remove(regFileName)
 
             global fileNameDownloadPath
@@ -110,7 +111,7 @@ def mp4_download():
     if request.method == "POST":
         if "playlist" in youtube_link:
             p = Playlist(youtube_link)
-            destination = '.' + sep + safe_filename(p.title)
+            destination = safe_filename(p.title)
             os.mkdir(destination) # create playlist folder
             os.chdir(destination) # change working directory to inside of playlist folder
             for video in p.videos:
@@ -204,19 +205,19 @@ def trimmer_editor():
         if start == '' and end == '':       #if no values for trim have been inserted, just default passthrough to trimmer library
             os.system("trimmer " + '"' + songFileNameToTrimmer + '"' + " --title tempTitle --artist tempArtist")
             fileNameDownloadPath = str("tempArtist - tempTitle.mp3")
-            return render_template('index.html', result = "Download Complete", option_form_mp3 = "mp3", trimmer_open = "open", result_trimmer = "Default trim applied", metadata_editor_open = "open")
+            return render_template('index.html', result = "Download Complete", option_form_mp3 = "mp3", result_trimmer = "Default trim applied", metadata_editor_open = "open")
         elif start != '' and end == '':     #if only start value for trim has been inserted
             os.system("trimmer " + '"' + songFileNameToTrimmer + '"' + " --trim-start " + start + " --title tempTitle --artist tempArtist")
             fileNameDownloadPath = str("tempArtist - tempTitle.mp3")
-            return render_template('index.html', result = "Download Complete", option_form_mp3 = "mp3", trimmer_open = "open", result_trimmer = "Trim for Start Done", metadata_editor_open = "open")
+            return render_template('index.html', result = "Download Complete", option_form_mp3 = "mp3", result_trimmer = "Trim for Start Done", metadata_editor_open = "open")
         elif start == '' and end != '':     #if only end value for trim has been inserted
             os.system("trimmer " + '"' + songFileNameToTrimmer + '"' + " --trim-end " + end + " --title tempTitle --artist tempArtist")
             fileNameDownloadPath = str("tempArtist - tempTitle.mp3")
-            return render_template('index.html', result = "Download Complete", option_form_mp3 = "mp3", trimmer_open = "open", result_trimmer = "Trim for End Done", metadata_editor_open = "open")
+            return render_template('index.html', result = "Download Complete", option_form_mp3 = "mp3", result_trimmer = "Trim for End Done", metadata_editor_open = "open")
         else:           #if both values have been inserted
             os.system("trimmer " + '"' + songFileNameToTrimmer + '"' + " --trim-start " + start + " --trim-end " + end + " --title tempTitle --artist tempArtist")
             fileNameDownloadPath = str("tempArtist - tempTitle.mp3")
-            return render_template('index.html', result = "Download Complete", option_form_mp3 = "mp3", trimmer_open = "open", result_trimmer = "Trim Done", metadata_editor_open = "open")
+            return render_template('index.html', result = "Download Complete", option_form_mp3 = "mp3", result_trimmer = "Trim Done", metadata_editor_open = "open")
     return render_template('index.html')
 
 
@@ -250,7 +251,7 @@ def mp4_trimmer_editor():
             os.system("ffmpeg -y -i " + '"' + "temp_vid.mp4" + '"' + " -ss " + start + " -to " + str(duration - int(end)) + " -c:v copy -c:a copy " + '"' + videoFileName + '"')
             os.remove("temp_vid.mp4")
 
-            return render_template('index.html', result = "Download Complete", option_form_mp4 = "mp4", mp4_trimmer_open = "open", result_trimmer = "Trim Done", mp4_download_button_open = "open")
+            return render_template('index.html', result = "Download Complete", option_form_mp4 = "mp4", result_trimmer = "Trim Done", mp4_download_button_open = "open")
 
     return render_template('index.html')
 
@@ -338,7 +339,7 @@ def mp3_metadata_editor():
         except IOError:
             IOError
         
-        return render_template('index.html', result = "Download Complete", option_form_mp3 = "mp3", metadata_editor_open = "open", trimmer_open = "open", player_button_open = "open")
+        return render_template('index.html', result = "Download Complete", option_form_mp3 = "mp3", player_button_open = "open")
     return render_template('index.html')
 
 #render mp3 player page in browser
@@ -353,6 +354,8 @@ def mp4_player():
 #download the final music file to downloads folder in user's computer
 @app.route('/download_file', methods = ["GET", "POST"])
 def download_file():
+    print(app.config['CLIENT_FILES'])
+    print(finalFileNameMp3)
     try:
         return send_from_directory(directory = app.config['CLIENT_FILES'], path = finalFileNameMp3, as_attachment = True)
     except FileNotFoundError:
@@ -361,6 +364,8 @@ def download_file():
 #download the final video file to downloads folder in user's computer
 @app.route('/download_mp4_file', methods = ["GET", "POST"])
 def download_mp4_file():
+    print(app.config['CLIENT_FILES'])
+    print(videoFileName)
     try:
         return send_from_directory(directory = app.config['CLIENT_FILES'], path = videoFileName, as_attachment = True)
     except FileNotFoundError:

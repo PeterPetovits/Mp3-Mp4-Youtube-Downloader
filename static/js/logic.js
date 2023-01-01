@@ -44,11 +44,26 @@ document.querySelector("#input-file").addEventListener("change", (event) => {
                 let url = URL.createObjectURL(file);
 
                 let song = {
-                    name: tag.tags.title,
-                    artist: tag.tags.artist,
-                    image: `url(data:${format};base64,${window.btoa(base64String)})`,
+                    name: '',
+                    artist: '',
+                    image: '',
                     path: url
                 };
+
+                if (tag.tags.title != undefined) {
+                    song.name = tag.tags.title;
+                } 
+                else {
+                    song.name = file.name;
+                }
+
+                if (tag.tags.artist != undefined) {
+                    song.artist = tag.tags.artist;
+                }
+
+                /*if (THE FILE HAS AN IMAGE) {
+                    song.image: = `url(data:${format};base64,${window.btoa(base64String)})`
+                }*/
                    
                 track_list.push(song);  
             },

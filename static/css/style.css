@@ -68,7 +68,6 @@ h1 {
 
 input[type="text"] {
     display: inline-block;
-    width: 80%;
     margin: 10px;
     padding: 10px;
     border: 0;
@@ -77,21 +76,37 @@ input[type="text"] {
     box-sizing: border-box;
 }
 
-input[type=submit] {
+#youtube_link {
+    width: 90%;
+}
+
+.trim-input {
+    min-width: 200px;
+    width: 25%;
+    max-width: 300px;
+}
+
+.metadata-input {
+    min-width: 400px;
+}
+
+input[type=submit], button {
     align-self: center;
     background-color: #e9e9e9;
+    min-width: 200px;
     width: 40%;
+    max-width: 500px;
     margin: 10px;
     padding: 10px;
     border-radius: 0.5rem;
 }
 
-input[type=submit]:hover {
+input[type=submit]:hover, button:hover {
     background-color: #cacaca;
     cursor: pointer;
 }
 
-input[type=submit]:active {
+input[type=submit]:active, button:active {
     background-color: #f1f1f1;
 }
 
@@ -134,3 +149,6 @@ input[type=submit]:active {
     flex-direction: column;
 }
 
+.player-and-download {
+    
+}

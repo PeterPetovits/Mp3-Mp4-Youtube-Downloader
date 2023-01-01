@@ -17,10 +17,10 @@
         <main>
             <form class="trimmer-form" action="{{url_for('mp4_trimmer_editor')}}" method="post">
                 <label for="start-time">Trim seconds from the start: </label><br>
-                <input type="text" id="start-time" name="start-time" placeholder="Trim seconds from the start"><br>
+                <input type="text" id="start-time" class="trim-input" name="start-time" placeholder="Trim seconds from the start"><br>
 
                 <label for="end-time">Trim seconds from the end: </label><br>
-                <input type="text" id="end-time" name="end-time" placeholder="Trim seconds from the end"><br>
+                <input type="text" id="end-time" class="trim-input" name="end-time" placeholder="Trim seconds from the end"><br>
 
                 <input type="submit" value="Trim">
             </form>
