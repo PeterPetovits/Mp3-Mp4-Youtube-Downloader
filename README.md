@@ -1,5 +1,9 @@
 # Mp3-Mp4-Youtube-Downloader
 
+This is a simple Youtube Downloader, in Python and Flask, that allows everyone to download mp3s and mp4s from individual Youtube videos or even from playlists.
+It also gives the user the ability to do a basic trim, cutting unnecessary parts from the beginning or/and the end, and to edit metadata like album, artists, cover art etc with a metadata editor.
+All this are possible by using some awesome open-source libraries.
+
 Programs we need to install:
 1. Python 3
 2. Virtualenv (https://packaging.python.org/en/latest/guides/installing-using-pip-and-virtual-environments/)
